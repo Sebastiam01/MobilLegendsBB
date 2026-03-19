@@ -1,114 +1,131 @@
 let equipos = JSON.parse(localStorage.getItem('torneo_db')) || [];
 let listaTempJugadores = [];
 
-// MODAL FUNCTIONS
-function abrirModal() { document.getElementById('modalAdmin').style.display = "block"; }
-function cerrarModal() { document.getElementById('modalAdmin').style.display = "none"; }
+// FUNCIONES DEL MODAL
+function abrirModal() {
+    document.getElementById('modalAdmin').style.display = 'flex';
+}
 
+function cerrarModal() {
+    document.getElementById('modalAdmin').style.display = 'none';
+}
+
+// AGREGAR JUGADOR A LA TABLA
 function agregarJugadorATabla() {
-    const nombre = document.getElementById('nombreJugador').value;
-    const idJ = document.getElementById('idJugador').value;
+    const nombre = document.getElementById('nombreJugador').value.trim();
+    const idJ = document.getElementById('idJugador').value.trim();
 
-    if(!nombre || !idJ) {
-        alert("Por favor escribe el nombre y el ID");
+    if (nombre === "" || idJ === "") {
+        alert("Escribe el nombre y el ID");
         return;
     }
 
-    // Validar si el ID ya existe
-    const existe = equipos.some(e => e.integrantes.some(j => j.idJ === idJ)) || listaTempJugadores.some(j => j.idJ === idJ);
-    if(existe) {
-        alert("Este ID ya está registrado.");
+    // Verificar si el ID ya existe
+    const existeEnEquipos = equipos.some(e => e.integrantes.some(j => j.idJ === idJ));
+    const existeEnTemp = listaTempJugadores.some(j => j.idJ === idJ);
+
+    if (existeEnEquipos || existeEnTemp) {
+        alert("Este ID de juego ya está registrado.");
         return;
     }
 
+    // Añadir a la lista temporal
     listaTempJugadores.push({ nombre, idJ });
-    
-    // Limpiar campos del jugador
+
+    // Limpiar inputs
     document.getElementById('nombreJugador').value = "";
     document.getElementById('idJugador').value = "";
-    
+
     renderTablaTemp();
 }
 
 function renderTablaTemp() {
     const cuerpo = document.getElementById('cuerpoTabla');
-    cuerpo.innerHTML = "";
-    listaTempJugadores.forEach((j, i) => {
-        cuerpo.innerHTML += `<tr>
-            <td>${j.nombre}</td>
-            <td>${j.idJ}</td>
-            <td><button onclick="quitarTemp(${i})" style="background:red; color:white; border:none; border-radius:3px; cursor:pointer;">X</button></td>
-        </tr>`;
+    cuerpo.innerHTML = ""; // Limpiar tabla actual
+
+    listaTempJugadores.forEach((jugador, index) => {
+        const fila = `
+            <tr>
+                <td>${jugador.nombre}</td>
+                <td>${jugador.idJ}</td>
+                <td><button onclick="quitarDeLista(${index})" style="background:red; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">X</button></td>
+            </tr>
+        `;
+        cuerpo.innerHTML += fila;
     });
 }
 
-function quitarTemp(i) {
-    listaTempJugadores.splice(i, 1);
+function quitarDeLista(index) {
+    listaTempJugadores.splice(index, 1);
     renderTablaTemp();
 }
 
+// GUARDAR EQUIPO COMPLETO
 function confirmarRegistro() {
-    const nomEq = document.getElementById('nombreEquipo').value;
-    const cap = document.getElementById('capitan').value;
+    const nomEq = document.getElementById('nombreEquipo').value.trim();
+    const cap = document.getElementById('capitan').value.trim();
 
-    if(!nomEq || !cap || listaTempJugadores.length === 0) {
-        alert("Completa todos los campos y añade al menos un jugador");
+    if (nomEq === "" || cap === "" || listaTempJugadores.length === 0) {
+        alert("Completa los datos del equipo y añade al menos 1 jugador");
         return;
     }
 
-    equipos.push({ nombre: nomEq, capitan: cap, integrantes: [...listaTempJugadores] });
+    const nuevoEquipo = {
+        nombre: nomEq,
+        capitan: cap,
+        integrantes: [...listaTempJugadores]
+    };
+
+    equipos.push(nuevoEquipo);
     localStorage.setItem('torneo_db', JSON.stringify(equipos));
 
-    // Limpiar Formulario Completo
+    // Resetear todo
     listaTempJugadores = [];
     document.getElementById('nombreEquipo').value = "";
     document.getElementById('capitan').value = "";
     renderTablaTemp();
-    alert("¡Equipo '" + nomEq + "' registrado con éxito!");
-    actualizarListaInscritos();
+    
+    alert("¡Equipo registrado con éxito!");
 }
 
+// LOGIN ADMIN
 function accederAdmin() {
-    const p = document.getElementById('adminPass').value;
-    if(p === "1234") {
-        document.getElementById('login-form').style.display = "none";
-        document.getElementById('admin-panel').style.display = "block";
-        actualizarListaInscritos();
+    const pass = document.getElementById('adminPass').value;
+    if (pass === "1234") {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+        mostrarEquiposAdmin();
     } else {
         alert("Contraseña incorrecta");
     }
 }
 
-function actualizarListaInscritos() {
-    const cont = document.getElementById('lista-confirmados');
-    if(!cont) return;
-    cont.innerHTML = "";
+function mostrarEquiposAdmin() {
+    const lista = document.getElementById('lista-confirmados');
+    lista.innerHTML = "";
     equipos.forEach(e => {
-        cont.innerHTML += `<div style="background:#0f172a; padding:10px; margin:5px; border-radius:5px; border-left:3px solid var(--gold);">
-            <strong>${e.nombre}</strong><br><small>Cap: ${e.capitan} (${e.integrantes.length} jug.)</small>
+        lista.innerHTML += `<div style="background:#0f172a; padding:8px; margin-top:5px; border-radius:4px; border-left:3px solid gold;">
+            ${e.nombre} - Cap: ${e.capitan}
         </div>`;
     });
 }
 
-function generarBracketVisual() {
-    if(equipos.length < 2) return alert("Mínimo 2 equipos");
-    const container = document.getElementById('bracket-container');
-    container.innerHTML = "";
-    let m = [...equipos].sort(() => Math.random() - 0.5);
-
-    const col1 = document.createElement('div'); col1.className = "round";
-    m.forEach(eq => {
-        const box = document.createElement('div');
-        box.className = "match-box";
-        box.innerText = eq.nombre;
-        col1.appendChild(box);
-    });
-    container.appendChild(col1);
-}
-
 function limpiarTodo() {
-    if(confirm("¿Borrar todos los datos?")) {
+    if(confirm("¿Borrar todos los equipos registrados?")) {
         localStorage.removeItem('torneo_db');
         location.reload();
+    }
+}
+
+function generarBracketVisual() {
+    const bracket = document.getElementById('bracket-container');
+    if (equipos.length < 2) return alert("Se necesitan al menos 2 equipos.");
+    
+    let m = [...equipos].sort(() => Math.random() - 0.5);
+    bracket.innerHTML = "<h4>Sorteo Aleatorio:</h4>";
+    for(let i=0; i < m.length; i+=2) {
+        const p1 = m[i].nombre;
+        const p2 = m[i+1] ? m[i+1].nombre : "PASA DIRECTO";
+        bracket.innerHTML += `<p>🛡️ ${p1} <strong>VS</strong> 🛡️ ${p2}</p>`;
     }
 }
