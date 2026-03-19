@@ -3,82 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brackets Torneo</title>
+    <title>Brackets Torneo MLBB</title>
     <style>
-        body { font-family: sans-serif; background: #0f172a; color: white; margin: 0; padding: 20px; text-align: center; }
-        .bracket-container { display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 50px; }
-        .column { display: flex; flex-direction: column; gap: 20px; }
-        .matchup { background: #1e293b; border: 2px solid #eab308; width: 180px; border-radius: 8px; overflow: hidden; }
-        .team { padding: 15px; cursor: pointer; border-bottom: 1px solid #334155; font-weight: bold; }
+        :root { --gold: #eab308; --dark: #0f172a; --match: #1e293b; --green: #10b981; }
+        body { font-family: sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
+        
+        .tournament-container { display: flex; justify-content: center; align-items: center; gap: 60px; margin-top: 50px; padding: 20px; overflow-x: auto; }
+        .column { display: flex; flex-direction: column; gap: 40px; }
+        
+        .match-card { background: var(--match); border: 2px solid var(--gold); width: 200px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .team { padding: 15px; cursor: pointer; border-bottom: 1px solid #334155; font-weight: bold; transition: 0.3s; font-size: 14px; }
         .team:last-child { border-bottom: none; }
         .team:hover { background: #334155; }
-        .winner { background: #10b981 !important; color: #000; }
-        .final-box { border-color: #3b82f6; }
+        .win { background: var(--green) !important; color: #000; }
+        
+        .label { font-size: 10px; color: var(--gold); font-weight: bold; margin-bottom: 5px; }
+        .final-card { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
     </style>
 </head>
 <body>
-    <h1>⚔️ Brackets Mobile Legends</h1>
-    <p>Haz clic en el equipo que ganó para que avance</p>
+    <h1>⚔️ MOBILE LEGENDS: BRACKETS</h1>
+    <p>Haz clic en el equipo ganador para que avance de fase</p>
 
-    <div class="bracket-container" id="visual"></div>
-    <br>
-    <a href="index.html" style="color:gray; text-decoration:none;">⬅ Volver</a>
+    <div class="tournament-container" id="bracketBoard"></div>
+
+    <br><br>
+    <a href="index.html" style="color: #64748b; text-decoration: none; font-size: 14px;">⬅ Volver al Registro</a>
 
     <script>
-        let sorteo = JSON.parse(localStorage.getItem('torneo_sorteo'));
-        let fase2 = JSON.parse(localStorage.getItem('ganadores_fase2')) || ["GANADOR A", "GANADOR B"];
-        let campeon = localStorage.getItem('campeon_final') || "CAMPEÓN";
+        let sorteo = JSON.parse(localStorage.getItem('sorteo_v3'));
+        let fase2 = JSON.parse(localStorage.getItem('ganadores_fase2')) || ["GANADOR 1", "GANADOR 2"];
+        let campeon = localStorage.getItem('ganador_final') || "🏆 CAMPEÓN";
 
-        dibujar();
+        render();
 
-        function dibujar() {
-            const v = document.getElementById('visual');
-            v.innerHTML = "";
-            if(!sorteo) { v.innerHTML = "No hay sorteo generado aún."; return; }
+        function render() {
+            const board = document.getElementById('bracketBoard');
+            board.innerHTML = "";
+            if(!sorteo) { board.innerHTML = "<h2>⚠️ No hay sorteo activo.</h2>"; return; }
 
-            // COLUMNA 1 (Sorteados)
+            // COLUMNA 1: INICIO
             const col1 = document.createElement('div'); col1.className = "column";
+            col1.innerHTML = '<div class="label">SEMIFINALES</div>';
             for(let i=0; i < sorteo.length; i+=2) {
                 const e1 = sorteo[i].nombre;
-                const e2 = sorteo[i+1] ? sorteo[i+1].nombre : "BYE";
+                const e2 = sorteo[i+1] ? sorteo[i+1].nombre : "BYE (Pasa Solo)";
                 col1.innerHTML += `
-                    <div class="matchup">
-                        <div class="team" onclick="avanzar(1, ${i/2}, '${e1}')">${e1}</div>
-                        <div class="team" onclick="avanzar(1, ${i/2}, '${e2}')">${e2}</div>
+                    <div class="match-card">
+                        <div class="team" onclick="up(1, ${i/2}, '${e1}')">${e1}</div>
+                        <div class="team" onclick="up(1, ${i/2}, '${e2}')">${e2}</div>
                     </div>`;
             }
 
-            // COLUMNA 2 (Semifinales)
+            // COLUMNA 2: FINAL
             const col2 = document.createElement('div'); col2.className = "column";
-            col2.innerHTML = `
-                <div class="matchup">
-                    <div class="team" onclick="avanzar(2, 0, '${fase2[0]}')">${fase2[0]}</div>
-                    <div class="team" onclick="avanzar(2, 0, '${fase2[1]}')">${fase2[1]}</div>
+            col2.innerHTML = '<div class="label">GRAN FINAL</div>';
+            col2.innerHTML += `
+                <div class="match-card">
+                    <div class="team" onclick="up(2, 0, '${fase2[0]}')">${fase2[0]}</div>
+                    <div class="team" onclick="up(2, 0, '${fase2[1]}')">${fase2[1]}</div>
                 </div>`;
 
-            // COLUMNA 3 (Final)
+            // COLUMNA 3: CAMPEÓN
             const col3 = document.createElement('div'); col3.className = "column";
-            col3.innerHTML = `
-                <div class="matchup final-box">
-                    <div class="team winner">${campeon}</div>
+            col3.innerHTML = '<div class="label">GANADOR</div>';
+            col3.innerHTML += `
+                <div class="match-card final-card">
+                    <div class="team win">${campeon}</div>
                 </div>`;
 
-            v.appendChild(col1);
-            v.appendChild(col2);
-            v.appendChild(col3);
+            board.appendChild(col1);
+            board.appendChild(col2);
+            board.appendChild(col3);
         }
 
-        function avanzar(fase, idx, nombre) {
-            if(nombre.includes("GANADOR") || nombre === "BYE") return;
+        function up(fase, idx, nombre) {
+            if(nombre.includes("GANADOR") || nombre.includes("BYE")) return;
             
             if(fase === 1) {
                 fase2[idx] = nombre;
                 localStorage.setItem('ganadores_fase2', JSON.stringify(fase2));
             } else if(fase === 2) {
                 campeon = nombre;
-                localStorage.setItem('campeon_final', campeon);
+                localStorage.setItem('ganador_final', campeon);
             }
-            dibujar();
+            render();
         }
     </script>
 </body>
