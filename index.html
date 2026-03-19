@@ -6,18 +6,16 @@
     <title>Registro Torneo MLBB</title>
     <style>
         :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
+        body { font-family: sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
         .container { max-width: 600px; margin: auto; }
         .admin-access { position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer; z-index: 100; background: var(--card); padding: 8px; border-radius: 50%; border: 1px solid var(--gold); }
         .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: left; }
-        input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
+        input { width: 92%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
         .btn-add { background: var(--blue); color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
         .btn-primary { width: 100%; padding: 15px; background: #10b981; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 15px; }
-        
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         th { color: var(--gold); border-bottom: 1px solid #334155; text-align: left; padding: 8px; }
         td { padding: 8px; border-bottom: 1px solid #1e293b; }
-
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; justify-content: center; align-items: center; }
         .modal-content { background: #16213e; padding: 30px; border-radius: 15px; width: 85%; max-width: 400px; border: 1px solid var(--gold); }
     </style>
@@ -34,7 +32,7 @@
             <input type="text" id="cap" placeholder="Nombre del Capitán">
             
             <hr style="border: 0.5px solid #334155; margin: 20px 0;">
-            <h3>Añadir Integrantes (5 Jugadores)</h3>
+            <h3>Integrantes (5 Jugadores)</h3>
             <div style="display: flex; gap: 5px;">
                 <input type="text" id="nJug" placeholder="Nombre Jugador">
                 <input type="text" id="idJug" placeholder="ID Juego">
@@ -42,14 +40,14 @@
             </div>
 
             <table>
-                <thead><tr><th>Jugador</th><th>ID</th><th>X</th></tr></thead>
+                <thead><tr><th>Jugador</th><th>ID</th><th>Acción</th></tr></thead>
                 <tbody id="cBody"></tbody>
             </table>
 
             <button class="btn-primary" onclick="finalizarRegistro()">CONFIRMAR EQUIPO COMPLETO</button>
         </div>
         <br>
-        <a href="brackets.html" id="linkB" style="display:none; color:cyan; font-weight:bold; text-decoration:none; border: 1px solid cyan; padding: 10px; border-radius: 8px;">🖥️ IR A PANTALLA DE BRACKETS</a>
+        <a href="brackets.html" id="linkB" style="display:none; color:cyan; font-weight:bold; text-decoration:none; border: 1px solid cyan; padding: 10px; border-radius: 8px;">🖥️ VER BRACKETS DEL TORNEO</a>
     </div>
 
     <div id="mAdmin" class="modal">
@@ -69,10 +67,11 @@
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('torneo_db_v3')) || [];
+        let db = JSON.parse(localStorage.getItem('torneo_data')) || [];
         let tJug = [];
 
-        if(localStorage.getItem('sorteo_v3')) document.getElementById('linkB').style.display = 'inline-block';
+        // Mostrar botón si ya hay sorteo
+        if(localStorage.getItem('sorteo_actual')) document.getElementById('linkB').style.display = 'inline-block';
 
         function addJ() {
             const n = document.getElementById('nJug').value;
@@ -94,12 +93,12 @@
             const ca = document.getElementById('cap').value;
             if(!ne || !ca || tJug.length === 0) return alert("Faltan datos");
             db.push({nombre: ne, capitan: ca, integrantes: [...tJug]});
-            localStorage.setItem('torneo_db_v3', JSON.stringify(db));
+            localStorage.setItem('torneo_data', JSON.stringify(db));
             tJug = [];
             document.getElementById('nEq').value = "";
             document.getElementById('cap').value = "";
             renderT();
-            alert("¡Equipo registrado con éxito!");
+            alert("¡Equipo registrado!");
         }
 
         function auth() {
@@ -110,12 +109,13 @@
         }
 
         function sortear() {
-            if(db.length < 2) return alert("Mínimo 2 equipos");
-            let m = [...db].sort(() => Math.random() - 0.5);
-            localStorage.setItem('sorteo_v3', JSON.stringify(m));
-            localStorage.removeItem('ganadores_fase2'); // Limpiar avances viejos
+            if(db.length < 2) return alert("Mínimo 2 equipos para sortear");
+            let mezclados = [...db].sort(() => Math.random() - 0.5);
+            localStorage.setItem('sorteo_actual', JSON.stringify(mezclados));
+            // Resetear avances
+            localStorage.removeItem('ganadores_semi');
             localStorage.removeItem('ganador_final');
-            alert("Sorteo generado. Ahora puedes ir a Brackets.");
+            alert("¡Sorteo generado con éxito!");
             location.reload();
         }
     </script>
