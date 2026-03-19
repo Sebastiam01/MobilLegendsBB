@@ -3,63 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torneo Master - Brackets Reales</title>
+    <title>Registro Torneo MLBB</title>
     <style>
         :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; --white: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: auto; }
         
         /* Botón Llave */
         .admin-access { position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer; z-index: 100; background: var(--card); padding: 8px; border-radius: 50%; border: 1px solid var(--gold); }
         
         /* Registro */
-        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 20px; }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 20px; text-align: left; }
         input { width: 90%; padding: 12px; margin: 5px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
         .btn-primary { width: 100%; padding: 15px; background: #10b981; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; }
         
         /* MODAL ADMIN */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 20px 0; }
-        .modal-content { background: #16213e; padding: 30px; border-radius: 15px; width: 95%; max-width: 900px; border: 1px solid var(--gold); position: relative; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; justify-content: center; align-items: flex-start; padding: 50px 0; }
+        .modal-content { background: #16213e; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; border: 1px solid var(--gold); position: relative; }
 
-        /* DISEÑO DE BRACKET (COMO LA FOTO) */
-        .bracket-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            background: #0f172a;
-            padding: 40px;
-            border-radius: 10px;
-            margin-top: 20px;
-            overflow-x: auto;
-        }
-
-        .column { display: flex; flex-direction: column; justify-content: space-around; gap: 20px; }
-        
-        .matchup {
-            display: flex;
-            flex-direction: column;
-            background: #1e293b;
-            border: 1px solid var(--gold);
-            width: 150px;
-            border-radius: 4px;
-            position: relative;
-        }
-
-        .team-slot {
-            padding: 10px;
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 1px solid #334155;
-            color: var(--white);
-        }
-        .team-slot:last-child { border-bottom: none; }
-        
-        .connector { color: var(--gold); font-size: 10px; text-align: center; background: #0f172a; }
-
-        .btn-sorteo { background: #8b5cf6; color: white; padding: 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 20px; }
-        .btn-danger { background: #ef4444; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 40px; opacity: 0.7; }
+        .btn-sorteo { background: #8b5cf6; color: white; padding: 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 10px; }
+        .btn-sorteo:disabled { background: #64748b; cursor: not-allowed; opacity: 0.6; }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 11px; }
+        .link-bracket { display: block; margin-top: 15px; color: cyan; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -67,18 +32,17 @@
     <div class="admin-access" onclick="abrirModal()">🔐</div>
 
     <div class="container">
-        <header style="text-align: center;">
-            <h1>🏆 MLBB: Torneo</h1>
-            <p>Registro de Equipos Oficial</p>
+        <header>
+            <h1>🏆 Torneo MLBB: Inscripciones</h1>
         </header>
 
         <div class="card">
-            <h2>📝 Inscripción</h2>
+            <h2>📝 Inscribir Equipo</h2>
             <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo">
             <input type="text" id="capitan" placeholder="Nombre del Capitán">
             
             <div style="background: #0f172a; padding: 15px; border-radius: 8px; margin-top:15px;">
-                <h4>Añadir Jugador</h4>
+                <h4>Integrantes</h4>
                 <div style="display: flex; gap: 5px;">
                     <input type="text" id="nombreJugador" placeholder="Nombre">
                     <input type="text" id="idJugador" placeholder="ID Juego">
@@ -88,9 +52,10 @@
                     <tbody id="cuerpoTabla"></tbody>
                 </table>
             </div>
-            
-            <button class="btn-primary" onclick="guardarEquipo()">FINALIZAR REGISTRO</button>
+            <button class="btn-primary" onclick="guardarEquipo()">CONFIRMAR REGISTRO TOTAL</button>
         </div>
+        
+        <a href="brackets.html" class="link-bracket" style="display:none;" id="ver-bracket-pub">👀 Ver Brackets del Torneo</a>
     </div>
 
     <div id="modalAdmin" class="modal-overlay">
@@ -103,12 +68,12 @@
                 <button onclick="login()" class="btn-primary">Entrar al Panel</button>
             </div>
 
-            <div id="panel-cont" style="display:none;">
+            <div id="panel-cont" style="display:none; text-align:left;">
                 <h2>⚙️ Gestión de Brackets</h2>
-                <button class="btn-sorteo" onclick="ejecutarSorteo()">🔀 GENERAR Y GUARDAR SORTEO</button>
+                <button class="btn-sorteo" id="btnSortear" onclick="ejecutarSorteo()">🔀 GENERAR Y GUARDAR SORTEO</button>
+                <div id="status-sorteo" style="font-size:12px; margin-bottom:10px;"></div>
                 
-                <div id="bracket-visual" class="bracket-container">
-                    </div>
+                <a href="brackets.html" class="btn-sorteo" style="text-decoration:none; display:inline-block; text-align:center;">🖥️ Ir a Pantalla de Brackets</a>
 
                 <button class="btn-danger" onclick="borrarTodo()">Eliminar todos los equipos y sorteos</button>
             </div>
@@ -116,22 +81,36 @@
     </div>
 
     <script>
+        // Lógica de Registro y Admin
         let dbEquipos = JSON.parse(localStorage.getItem('torneo_equipos')) || [];
         let sorteoGuardado = JSON.parse(localStorage.getItem('torneo_sorteo')) || null;
         let tempJugadores = [];
 
-        // Iniciar vista
-        if(sorteoGuardado) { /* Se cargará al abrir el modal */ }
+        actualizarEnlacePublico();
 
         function abrirModal() {
             document.getElementById('modalAdmin').style.display = 'flex';
-            if(sorteoGuardado) dibujarBracket(sorteoGuardado);
+            checkSorteo();
         }
         function cerrarModal() { document.getElementById('modalAdmin').style.display = 'none'; }
 
+        function checkSorteo() {
+            const btn = document.getElementById('btnSortear');
+            const status = document.getElementById('status-sorteo');
+            if(sorteoGuardado) {
+                btn.disabled = true;
+                btn.innerText = "Sorteo ya guardado";
+                status.innerText = "✅ El sorteo está activo. No se puede sortear de nuevo.";
+            } else {
+                btn.disabled = false;
+                btn.innerText = "🔀 GENERAR Y GUARDAR SORTEO";
+                status.innerText = "⚠️ Pendiente de generar sorteo.";
+            }
+        }
+
         function agregarJugador() {
-            const n = document.getElementById('nombreJugador').value;
-            const i = document.getElementById('idJugador').value;
+            const n = document.getElementById('nombreJugador').value.trim();
+            const i = document.getElementById('idJugador').value.trim();
             if(!n || !i) return;
             tempJugadores.push({n, i});
             document.getElementById('nombreJugador').value = "";
@@ -141,17 +120,15 @@
 
         function renderTemp() {
             const t = document.getElementById('cuerpoTabla');
-            t.innerHTML = tempJugadores.map(j => `<tr><td>${j.n}</td><td>${j.i}</td></tr>`).join('');
+            t.innerHTML = tempJugadores.map(j => `<tr><td style="border-bottom:1px solid #333">${j.n}</td><td style="border-bottom:1px solid #333">${j.i}</td></tr>`).join('');
         }
 
         function guardarEquipo() {
-            const ne = document.getElementById('nombreEquipo').value;
-            const cp = document.getElementById('capitan').value;
+            const ne = document.getElementById('nombreEquipo').value.trim();
+            const cp = document.getElementById('capitan').value.trim();
             if(!ne || !cp || tempJugadores.length === 0) return alert("Datos incompletos");
-
             dbEquipos.push({nombre: ne, capitan: cp, jugadores: [...tempJugadores]});
             localStorage.setItem('torneo_equipos', JSON.stringify(dbEquipos));
-            
             tempJugadores = [];
             document.getElementById('nombreEquipo').value = "";
             document.getElementById('capitan').value = "";
@@ -163,64 +140,34 @@
             if(document.getElementById('pass').value === "1234") {
                 document.getElementById('login-admin').style.display = 'none';
                 document.getElementById('panel-cont').style.display = 'block';
-                if(sorteoGuardado) dibujarBracket(sorteoGuardado);
-            }
+                checkSorteo();
+            } else { alert("Incorrecto"); }
         }
 
         function ejecutarSorteo() {
             if(dbEquipos.length < 2) return alert("Mínimo 2 equipos");
-            
             // Mezclar
             let mezclados = [...dbEquipos].sort(() => Math.random() - 0.5);
-            sorteoGuardado = mezclados;
             
-            // GUARDAR SORTEO PERMANENTE
-            localStorage.setItem('torneo_sorteo', JSON.stringify(sorteoGuardado));
+            // Estructura para Brackets Dinámicos
+            let structure = {
+                matches: mezclados, // [Eq1, Eq2, Eq3, Eq4]
+                results: { semifinal: [null, null], final: null } // Dónde guardaremos los avances
+            };
             
-            dibujarBracket(sorteoGuardado);
+            sorteoGuardado = structure;
+            localStorage.setItem('torneo_sorteo', JSON.stringify(structure));
+            checkSorteo();
+            actualizarEnlacePublico();
+            alert("¡Sorteo generado y guardado! Ve a la pantalla de Brackets.");
         }
 
-        function dibujarBracket(lista) {
-            const cont = document.getElementById('bracket-visual');
-            cont.innerHTML = "";
-
-            // Columna 1: Octavos/Cuartos (Inscritos)
-            const col1 = document.createElement('div');
-            col1.className = "column";
-
-            for(let i=0; i < lista.length; i+=2) {
-                const eq1 = lista[i].nombre;
-                const eq2 = lista[i+1] ? lista[i+1].nombre : "---";
-                
-                col1.innerHTML += `
-                    <div class="matchup">
-                        <div class="team-slot">${eq1}</div>
-                        <div class="connector">VS</div>
-                        <div class="team-slot">${eq2}</div>
-                    </div>
-                `;
-            }
-
-            // Columna 2: Siguiente Fase (Simulada para diseño)
-            const col2 = document.createElement('div');
-            col2.className = "column";
-            col2.innerHTML = `<div class="matchup"><div class="team-slot">GANADOR A</div><div class="connector">VS</div><div class="team-slot">GANADOR B</div></div>`;
-
-            // Columna 3: Final
-            const col3 = document.createElement('div');
-            col3.className = "column";
-            col3.innerHTML = `<div class="matchup" style="border-color:cyan"><div class="team-slot">🏆 GRAN FINAL</div></div>`;
-
-            cont.appendChild(col1);
-            cont.appendChild(col2);
-            cont.appendChild(col3);
+        function actualizarEnlacePublico() {
+            if(sorteoGuardado) document.getElementById('ver-bracket-pub').style.display = 'inline-block';
         }
 
         function borrarTodo() {
-            if(confirm("Se borrará TODO.")) {
-                localStorage.clear();
-                location.reload();
-            }
+            if(confirm("Se borrará TODO.")) { localStorage.clear(); location.reload(); }
         }
     </script>
 </body>
