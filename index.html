@@ -3,24 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torneo Pro - Guardado Permanente</title>
+    <title>Torneo Master - Brackets Reales</title>
     <style>
-        :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; }
+        :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: auto; }
+        .container { max-width: 800px; margin: auto; }
+        
+        /* Botón Llave */
         .admin-access { position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer; z-index: 100; background: var(--card); padding: 8px; border-radius: 50%; border: 1px solid var(--gold); }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
-        .input-group, .row { display: flex; gap: 8px; margin-bottom: 15px; }
-        input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
-        .table-container { margin: 15px 0; background: #0f172a; border-radius: 6px; border: 1px solid #334155; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #334155; font-size: 13px; }
-        th { color: var(--gold); background: #1e293b; }
-        .btn-add { background: var(--blue); color: white; border: none; padding: 0 20px; cursor: pointer; border-radius: 6px; font-size: 20px; }
-        .btn-primary { width: 100%; padding: 15px; background: #10b981; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card); padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; border: 1px solid var(--gold); }
-        .bracket-view { background: white; color: #111; padding: 20px; margin-top: 15px; border-radius: 8px; font-weight: bold; border-left: 5px solid var(--gold); }
+        
+        /* Registro */
+        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 20px; }
+        input { width: 90%; padding: 12px; margin: 5px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
+        .btn-primary { width: 100%; padding: 15px; background: #10b981; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        
+        /* MODAL ADMIN */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 20px 0; }
+        .modal-content { background: #16213e; padding: 30px; border-radius: 15px; width: 95%; max-width: 900px; border: 1px solid var(--gold); position: relative; }
+
+        /* DISEÑO DE BRACKET (COMO LA FOTO) */
+        .bracket-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            background: #0f172a;
+            padding: 40px;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .column { display: flex; flex-direction: column; justify-content: space-around; gap: 20px; }
+        
+        .matchup {
+            display: flex;
+            flex-direction: column;
+            background: #1e293b;
+            border: 1px solid var(--gold);
+            width: 150px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .team-slot {
+            padding: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+            color: var(--white);
+        }
+        .team-slot:last-child { border-bottom: none; }
+        
+        .connector { color: var(--gold); font-size: 10px; text-align: center; background: #0f172a; }
+
+        .btn-sorteo { background: #8b5cf6; color: white; padding: 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 20px; }
+        .btn-danger { background: #ef4444; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 40px; opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -29,131 +68,157 @@
 
     <div class="container">
         <header style="text-align: center;">
-            <h1>🏆 MLBB: Torneo Master</h1>
-            <p>Los datos se guardan automáticamente</p>
+            <h1>🏆 MLBB: Torneo</h1>
+            <p>Registro de Equipos Oficial</p>
         </header>
 
         <div class="card">
-            <h2>📝 Registro de Equipo</h2>
-            <div class="input-group">
-                <input type="text" id="nombreEquipo" placeholder="Nombre Equipo">
-                <input type="text" id="capitan" placeholder="Capitán">
-            </div>
-
-            <h3>Integrantes del Equipo</h3>
-            <div class="row">
-                <input type="text" id="nombreJugador" placeholder="Nombre Jugador">
-                <input type="text" id="idJugador" placeholder="ID (Ej: 12345)">
-                <button class="btn-add" onclick="agregarJugador()">+</button>
-            </div>
+            <h2>📝 Inscripción</h2>
+            <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo">
+            <input type="text" id="capitan" placeholder="Nombre del Capitán">
             
-            <div class="table-container">
-                <table>
-                    <thead><tr><th>Jugador</th><th>ID Juego</th><th>Borrar</th></tr></thead>
+            <div style="background: #0f172a; padding: 15px; border-radius: 8px; margin-top:15px;">
+                <h4>Añadir Jugador</h4>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" id="nombreJugador" placeholder="Nombre">
+                    <input type="text" id="idJugador" placeholder="ID Juego">
+                    <button onclick="agregarJugador()" style="background:var(--blue); border:none; color:white; padding:0 15px; border-radius:5px; cursor:pointer;">+</button>
+                </div>
+                <table style="width:100%; font-size:12px; margin-top:10px;">
                     <tbody id="cuerpoTabla"></tbody>
                 </table>
             </div>
-            <button class="btn-primary" onclick="guardarEquipo()">FINALIZAR REGISTRO DE EQUIPO</button>
+            
+            <button class="btn-primary" onclick="guardarEquipo()">FINALIZAR REGISTRO</button>
         </div>
     </div>
 
     <div id="modalAdmin" class="modal-overlay">
         <div class="modal-content">
-            <button onclick="cerrarModal()" style="float:right; background:none; color:white; border:none; font-size:25px; cursor:pointer;">&times;</button>
+            <span onclick="cerrarModal()" style="position:absolute; top:10px; right:20px; font-size:30px; cursor:pointer;">&times;</span>
+            
             <div id="login-admin">
                 <h3>Admin Login</h3>
-                <input type="password" id="pass" placeholder="Contraseña (1234)" style="width: 85%;">
-                <button onclick="login()" style="margin-top:10px; padding:10px; width:92%; background: var(--blue); color:white; border:none; border-radius:5px; cursor:pointer;">Entrar</button>
+                <input type="password" id="pass" placeholder="Clave (1234)">
+                <button onclick="login()" class="btn-primary">Entrar al Panel</button>
             </div>
+
             <div id="panel-cont" style="display:none;">
-                <h3>⚙️ Panel de Sorteo</h3>
-                <p id="contadorEquipos"></p>
-                <button onclick="generarSorteo()" style="background:#8b5cf6; color:white; padding:12px; border:none; border-radius:5px; cursor:pointer; width:100%;">🔀 GENERAR CRUCES ALEATORIOS</button>
-                <div id="bracket-res" class="bracket-view">Aún no hay sorteo...</div>
-                <hr>
-                <button onclick="borrarTodo()" style="background:red; color:white; padding:8px; border:none; border-radius:5px; cursor:pointer; width:100%; font-size:12px;">⚠️ BORRAR TODA LA BASE DE DATOS</button>
+                <h2>⚙️ Gestión de Brackets</h2>
+                <button class="btn-sorteo" onclick="ejecutarSorteo()">🔀 GENERAR Y GUARDAR SORTEO</button>
+                
+                <div id="bracket-visual" class="bracket-container">
+                    </div>
+
+                <button class="btn-danger" onclick="borrarTodo()">Eliminar todos los equipos y sorteos</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Cargar base de datos al iniciar
-        let db = JSON.parse(localStorage.getItem('torneo_mlbb_v2')) || [];
+        let dbEquipos = JSON.parse(localStorage.getItem('torneo_equipos')) || [];
+        let sorteoGuardado = JSON.parse(localStorage.getItem('torneo_sorteo')) || null;
         let tempJugadores = [];
 
-        function abrirModal() { 
-            document.getElementById('modalAdmin').style.display = 'flex'; 
-            document.getElementById('contadorEquipos').innerText = `Equipos registrados: ${db.length}`;
+        // Iniciar vista
+        if(sorteoGuardado) { /* Se cargará al abrir el modal */ }
+
+        function abrirModal() {
+            document.getElementById('modalAdmin').style.display = 'flex';
+            if(sorteoGuardado) dibujarBracket(sorteoGuardado);
         }
         function cerrarModal() { document.getElementById('modalAdmin').style.display = 'none'; }
 
         function agregarJugador() {
-            const n = document.getElementById('nombreJugador').value.trim();
-            const i = document.getElementById('idJugador').value.trim();
-            if(!n || !i) return alert("Escribe nombre e ID");
-
-            // Evitar IDs duplicados
-            const existe = db.some(eq => eq.jugadores.some(j => j.i === i)) || tempJugadores.some(j => j.i === i);
-            if(existe) return alert("¡Este ID ya está en uso!");
-
+            const n = document.getElementById('nombreJugador').value;
+            const i = document.getElementById('idJugador').value;
+            if(!n || !i) return;
             tempJugadores.push({n, i});
             document.getElementById('nombreJugador').value = "";
             document.getElementById('idJugador').value = "";
-            dibujarTabla();
+            renderTemp();
         }
 
-        function dibujarTabla() {
-            const c = document.getElementById('cuerpoTabla');
-            c.innerHTML = tempJugadores.map((j, idx) => `
-                <tr><td>${j.n}</td><td>${j.i}</td>
-                <td><button onclick="eliminarJugador(${idx})" style="background:red; color:white; border:none; cursor:pointer; border-radius:3px;">X</button></td></tr>`).join('');
+        function renderTemp() {
+            const t = document.getElementById('cuerpoTabla');
+            t.innerHTML = tempJugadores.map(j => `<tr><td>${j.n}</td><td>${j.i}</td></tr>`).join('');
         }
-
-        function eliminarJugador(idx) { tempJugadores.splice(idx, 1); dibujarTabla(); }
 
         function guardarEquipo() {
-            const ne = document.getElementById('nombreEquipo').value.trim();
-            const cap = document.getElementById('capitan').value.trim();
-            if(!ne || !cap || tempJugadores.length === 0) return alert("Faltan datos o jugadores");
+            const ne = document.getElementById('nombreEquipo').value;
+            const cp = document.getElementById('capitan').value;
+            if(!ne || !cp || tempJugadores.length === 0) return alert("Datos incompletos");
 
-            // Guardar en el array y sincronizar con localStorage
-            db.push({nombre: ne, capitan: cap, jugadores: [...tempJugadores]});
-            localStorage.setItem('torneo_mlbb_v2', JSON.stringify(db));
+            dbEquipos.push({nombre: ne, capitan: cp, jugadores: [...tempJugadores]});
+            localStorage.setItem('torneo_equipos', JSON.stringify(dbEquipos));
             
-            // Limpiar interfaz
             tempJugadores = [];
             document.getElementById('nombreEquipo').value = "";
             document.getElementById('capitan').value = "";
-            dibujarTabla();
-            alert(`✅ Equipo "${ne}" guardado permanentemente.`);
+            renderTemp();
+            alert("Equipo Guardado");
         }
 
         function login() {
             if(document.getElementById('pass').value === "1234") {
                 document.getElementById('login-admin').style.display = 'none';
                 document.getElementById('panel-cont').style.display = 'block';
-            } else { alert("Clave incorrecta"); }
+                if(sorteoGuardado) dibujarBracket(sorteoGuardado);
+            }
         }
 
-        function generarSorteo() {
-            if(db.length < 2) return alert("Necesitas al menos 2 equipos registrados.");
+        function ejecutarSorteo() {
+            if(dbEquipos.length < 2) return alert("Mínimo 2 equipos");
             
-            // Mezclar equipos
-            let mezclados = [...db].sort(() => Math.random() - 0.5);
-            let html = "<strong>--- ENFRENTAMIENTOS ---</strong><br><br>";
+            // Mezclar
+            let mezclados = [...dbEquipos].sort(() => Math.random() - 0.5);
+            sorteoGuardado = mezclados;
             
-            for(let i=0; i<mezclados.length; i+=2) {
-                const eq1 = mezclados[i].nombre;
-                const eq2 = mezclados[i+1] ? mezclados[i+1].nombre : "PASA DIRECTO (Bye)";
-                html += `🎮 ${eq1} <span style="color:var(--blue)">VS</span> ${eq2}<br><hr style="border:0.5px solid #ddd">`;
+            // GUARDAR SORTEO PERMANENTE
+            localStorage.setItem('torneo_sorteo', JSON.stringify(sorteoGuardado));
+            
+            dibujarBracket(sorteoGuardado);
+        }
+
+        function dibujarBracket(lista) {
+            const cont = document.getElementById('bracket-visual');
+            cont.innerHTML = "";
+
+            // Columna 1: Octavos/Cuartos (Inscritos)
+            const col1 = document.createElement('div');
+            col1.className = "column";
+
+            for(let i=0; i < lista.length; i+=2) {
+                const eq1 = lista[i].nombre;
+                const eq2 = lista[i+1] ? lista[i+1].nombre : "---";
+                
+                col1.innerHTML += `
+                    <div class="matchup">
+                        <div class="team-slot">${eq1}</div>
+                        <div class="connector">VS</div>
+                        <div class="team-slot">${eq2}</div>
+                    </div>
+                `;
             }
-            document.getElementById('bracket-res').innerHTML = html;
+
+            // Columna 2: Siguiente Fase (Simulada para diseño)
+            const col2 = document.createElement('div');
+            col2.className = "column";
+            col2.innerHTML = `<div class="matchup"><div class="team-slot">GANADOR A</div><div class="connector">VS</div><div class="team-slot">GANADOR B</div></div>`;
+
+            // Columna 3: Final
+            const col3 = document.createElement('div');
+            col3.className = "column";
+            col3.innerHTML = `<div class="matchup" style="border-color:cyan"><div class="team-slot">🏆 GRAN FINAL</div></div>`;
+
+            cont.appendChild(col1);
+            cont.appendChild(col2);
+            cont.appendChild(col3);
         }
 
         function borrarTodo() {
-            if(confirm("¿Estás 100% seguro? Se borrarán todos los equipos para siempre.")) {
-                localStorage.removeItem('torneo_mlbb_v2');
-                db = [];
+            if(confirm("Se borrará TODO.")) {
+                localStorage.clear();
                 location.reload();
             }
         }
