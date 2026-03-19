@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torneo MLBB - Registro y Brackets</title>
+    <title>Torneo MLBB</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="admin-access" onclick="abrirModal()">🔐</div>
+
     <div class="container">
         <header>
             <h1>🏆 Mobile Legends: Torneo</h1>
             <p>Inscribe a tu equipo y participa por la gloria</p>
         </header>
 
-        <div class="card" id="registro-section">
+        <div class="card">
             <h2>📝 Registro de Equipo</h2>
             <div class="input-group">
                 <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo">
@@ -27,7 +29,7 @@
                     <input type="text" id="idJugador" placeholder="ID del Juego">
                     <button class="btn-add" onclick="agregarJugadorATabla()">+</button>
                 </div>
-                <table id="tablaTemporal">
+                <table>
                     <thead>
                         <tr>
                             <th>Jugador</th>
@@ -40,29 +42,21 @@
             </div>
             <button class="btn-primary" onclick="confirmarRegistro()">Confirmar Registro Total</button>
         </div>
+    </div>
 
-        <hr>
-
-        <div id="admin-area">
+    <div id="modalAdmin" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="cerrarModal()">&times;</span>
             <div id="login-form">
-                <h3>🔐 Panel de Control (Admin)</h3>
+                <h3>Acceso Administrador</h3>
                 <input type="password" id="adminPass" placeholder="Contraseña">
                 <button onclick="accederAdmin()">Entrar</button>
             </div>
-
             <div id="admin-panel" style="display:none;">
                 <h2>⚙️ Gestión del Torneo</h2>
-                <div class="admin-actions">
-                    <button class="btn-action" onclick="generarBracketVisual()">Generar Sorteo Visual</button>
-                    <button class="btn-danger" onclick="limpiarTodo()">Borrar Todo el Torneo</button>
-                </div>
-
-                <div class="bracket-wrapper">
-                    <h3>Esquema de Enfrentamientos</h3>
-                    <div id="bracket-container" class="bracket-container">
-                        </div>
-                </div>
-                
+                <button class="btn-action" onclick="generarBracketVisual()">Generar Sorteo</button>
+                <button class="btn-danger" onclick="limpiarTodo()">Borrar Torneo</button>
+                <div id="bracket-container" class="bracket-container"></div>
                 <h3>Equipos Inscritos</h3>
                 <div id="lista-confirmados" class="grid-equipos"></div>
             </div>
