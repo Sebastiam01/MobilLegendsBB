@@ -3,171 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Torneo MLBB</title>
+    <title>Registro MLBB</title>
     <style>
-        :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; --white: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: auto; }
-        
-        /* Botón Llave */
-        .admin-access { position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer; z-index: 100; background: var(--card); padding: 8px; border-radius: 50%; border: 1px solid var(--gold); }
-        
-        /* Registro */
-        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 20px; text-align: left; }
-        input { width: 90%; padding: 12px; margin: 5px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
-        .btn-primary { width: 100%; padding: 15px; background: #10b981; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-        
-        /* MODAL ADMIN */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; justify-content: center; align-items: flex-start; padding: 50px 0; }
-        .modal-content { background: #16213e; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; border: 1px solid var(--gold); position: relative; }
-
-        .btn-sorteo { background: #8b5cf6; color: white; padding: 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 10px; }
-        .btn-sorteo:disabled { background: #64748b; cursor: not-allowed; opacity: 0.6; }
-        .btn-danger { background: #ef4444; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 11px; }
-        .link-bracket { display: block; margin-top: 15px; color: cyan; text-decoration: none; font-weight: bold; }
+        :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; }
+        body { font-family: sans-serif; background: var(--dark); color: white; text-align: center; padding: 20px; }
+        .container { max-width: 500px; margin: auto; }
+        .admin-access { position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer; background: var(--card); padding: 8px; border-radius: 50%; border: 1px solid var(--gold); }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; text-align: left; border: 1px solid #334155; }
+        input { width: 90%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
+        .btn-primary { width: 100%; padding: 15px; background: #10b981; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: #16213e; padding: 30px; border-radius: 15px; width: 85%; max-width: 400px; border: 1px solid var(--gold); }
+        .btn-sorteo { background: #8b5cf6; color: white; padding: 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="admin-access" onclick="abrirModal()">🔐</div>
+    <div class="admin-access" onclick="document.getElementById('modalAdmin').style.display='flex'">🔐</div>
 
     <div class="container">
-        <header>
-            <h1>🏆 Torneo MLBB: Inscripciones</h1>
-        </header>
-
+        <h1>🏆 Registro Torneo</h1>
         <div class="card">
-            <h2>📝 Inscribir Equipo</h2>
-            <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo">
-            <input type="text" id="capitan" placeholder="Nombre del Capitán">
-            
-            <div style="background: #0f172a; padding: 15px; border-radius: 8px; margin-top:15px;">
-                <h4>Integrantes</h4>
-                <div style="display: flex; gap: 5px;">
-                    <input type="text" id="nombreJugador" placeholder="Nombre">
-                    <input type="text" id="idJugador" placeholder="ID Juego">
-                    <button onclick="agregarJugador()" style="background:var(--blue); border:none; color:white; padding:0 15px; border-radius:5px; cursor:pointer;">+</button>
-                </div>
-                <table style="width:100%; font-size:12px; margin-top:10px;">
-                    <tbody id="cuerpoTabla"></tbody>
-                </table>
-            </div>
-            <button class="btn-primary" onclick="guardarEquipo()">CONFIRMAR REGISTRO TOTAL</button>
+            <input type="text" id="nombreEquipo" placeholder="Nombre Equipo">
+            <input type="text" id="capitan" placeholder="Capitán">
+            <button class="btn-primary" onclick="guardarEquipo()">REGISTRAR EQUIPO</button>
+            <p id="contador" style="text-align:center; color:var(--gold); font-weight:bold;"></p>
         </div>
-        
-        <a href="brackets.html" class="link-bracket" style="display:none;" id="ver-bracket-pub">👀 Ver Brackets del Torneo</a>
+        <br>
+        <a href="brackets.html" id="linkB" style="display:none; color:cyan; font-weight:bold; text-decoration:none;">➡️ IR A LOS BRACKETS</a>
     </div>
 
     <div id="modalAdmin" class="modal-overlay">
         <div class="modal-content">
-            <span onclick="cerrarModal()" style="position:absolute; top:10px; right:20px; font-size:30px; cursor:pointer;">&times;</span>
-            
+            <span onclick="document.getElementById('modalAdmin').style.display='none'" style="float:right; cursor:pointer;">&times;</span>
             <div id="login-admin">
-                <h3>Admin Login</h3>
+                <h3>Admin</h3>
                 <input type="password" id="pass" placeholder="Clave (1234)">
-                <button onclick="login()" class="btn-primary">Entrar al Panel</button>
+                <button onclick="login()" class="btn-primary">Entrar</button>
             </div>
-
-            <div id="panel-cont" style="display:none; text-align:left;">
-                <h2>⚙️ Gestión de Brackets</h2>
-                <button class="btn-sorteo" id="btnSortear" onclick="ejecutarSorteo()">🔀 GENERAR Y GUARDAR SORTEO</button>
-                <div id="status-sorteo" style="font-size:12px; margin-bottom:10px;"></div>
-                
-                <a href="brackets.html" class="btn-sorteo" style="text-decoration:none; display:inline-block; text-align:center;">🖥️ Ir a Pantalla de Brackets</a>
-
-                <button class="btn-danger" onclick="borrarTodo()">Eliminar todos los equipos y sorteos</button>
+            <div id="panel-cont" style="display:none;">
+                <button id="btnSort" class="btn-sorteo" onclick="ejecutarSorteo()">🔀 GENERAR SORTEO</button>
+                <a href="brackets.html" class="btn-sorteo" style="display:block; text-decoration:none; text-align:center; background:#3b82f6;">🖥️ VER PANTALLA GRANDE</a>
+                <button onclick="localStorage.clear(); location.reload();" style="background:red; color:white; border:none; padding:5px; margin-top:20px; cursor:pointer; font-size:10px;">BORRAR TODO</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Lógica de Registro y Admin
-        let dbEquipos = JSON.parse(localStorage.getItem('torneo_equipos')) || [];
-        let sorteoGuardado = JSON.parse(localStorage.getItem('torneo_sorteo')) || null;
-        let tempJugadores = [];
-
-        actualizarEnlacePublico();
-
-        function abrirModal() {
-            document.getElementById('modalAdmin').style.display = 'flex';
-            checkSorteo();
-        }
-        function cerrarModal() { document.getElementById('modalAdmin').style.display = 'none'; }
-
-        function checkSorteo() {
-            const btn = document.getElementById('btnSortear');
-            const status = document.getElementById('status-sorteo');
-            if(sorteoGuardado) {
-                btn.disabled = true;
-                btn.innerText = "Sorteo ya guardado";
-                status.innerText = "✅ El sorteo está activo. No se puede sortear de nuevo.";
-            } else {
-                btn.disabled = false;
-                btn.innerText = "🔀 GENERAR Y GUARDAR SORTEO";
-                status.innerText = "⚠️ Pendiente de generar sorteo.";
-            }
-        }
-
-        function agregarJugador() {
-            const n = document.getElementById('nombreJugador').value.trim();
-            const i = document.getElementById('idJugador').value.trim();
-            if(!n || !i) return;
-            tempJugadores.push({n, i});
-            document.getElementById('nombreJugador').value = "";
-            document.getElementById('idJugador').value = "";
-            renderTemp();
-        }
-
-        function renderTemp() {
-            const t = document.getElementById('cuerpoTabla');
-            t.innerHTML = tempJugadores.map(j => `<tr><td style="border-bottom:1px solid #333">${j.n}</td><td style="border-bottom:1px solid #333">${j.i}</td></tr>`).join('');
-        }
+        let equipos = JSON.parse(localStorage.getItem('torneo_equipos')) || [];
+        document.getElementById('contador').innerText = `Equipos inscritos: ${equipos.length}`;
+        if(localStorage.getItem('torneo_sorteo')) document.getElementById('linkB').style.display = 'block';
 
         function guardarEquipo() {
-            const ne = document.getElementById('nombreEquipo').value.trim();
-            const cp = document.getElementById('capitan').value.trim();
-            if(!ne || !cp || tempJugadores.length === 0) return alert("Datos incompletos");
-            dbEquipos.push({nombre: ne, capitan: cp, jugadores: [...tempJugadores]});
-            localStorage.setItem('torneo_equipos', JSON.stringify(dbEquipos));
-            tempJugadores = [];
+            const n = document.getElementById('nombreEquipo').value;
+            const c = document.getElementById('capitan').value;
+            if(!n || !c) return alert("Faltan datos");
+            equipos.push({nombre: n, capitan: c});
+            localStorage.setItem('torneo_equipos', JSON.stringify(equipos));
             document.getElementById('nombreEquipo').value = "";
             document.getElementById('capitan').value = "";
-            renderTemp();
-            alert("Equipo Guardado");
+            document.getElementById('contador').innerText = `Equipos inscritos: ${equipos.length}`;
+            alert("¡Equipo guardado!");
         }
 
         function login() {
             if(document.getElementById('pass').value === "1234") {
                 document.getElementById('login-admin').style.display = 'none';
                 document.getElementById('panel-cont').style.display = 'block';
-                checkSorteo();
-            } else { alert("Incorrecto"); }
+            }
         }
 
         function ejecutarSorteo() {
-            if(dbEquipos.length < 2) return alert("Mínimo 2 equipos");
-            // Mezclar
-            let mezclados = [...dbEquipos].sort(() => Math.random() - 0.5);
-            
-            // Estructura para Brackets Dinámicos
-            let structure = {
-                matches: mezclados, // [Eq1, Eq2, Eq3, Eq4]
-                results: { semifinal: [null, null], final: null } // Dónde guardaremos los avances
-            };
-            
-            sorteoGuardado = structure;
-            localStorage.setItem('torneo_sorteo', JSON.stringify(structure));
-            checkSorteo();
-            actualizarEnlacePublico();
-            alert("¡Sorteo generado y guardado! Ve a la pantalla de Brackets.");
-        }
-
-        function actualizarEnlacePublico() {
-            if(sorteoGuardado) document.getElementById('ver-bracket-pub').style.display = 'inline-block';
-        }
-
-        function borrarTodo() {
-            if(confirm("Se borrará TODO.")) { localStorage.clear(); location.reload(); }
+            if(equipos.length < 2) return alert("Mínimo 2 equipos");
+            let mezclados = [...equipos].sort(() => Math.random() - 0.5);
+            // Guardamos la lista mezclada directamente
+            localStorage.setItem('torneo_sorteo', JSON.stringify(mezclados));
+            // También reiniciamos los ganadores de las fases siguientes por si acaso
+            localStorage.removeItem('ganadores_fase2');
+            localStorage.removeItem('campeon_final');
+            alert("¡Sorteo Generado!");
+            location.reload(); 
         }
     </script>
 </body>
