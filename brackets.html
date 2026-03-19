@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteo de Torneo - Brackets Dinámicos</title>
+    <style>
+        :root { --gold: #eab308; --dark-bg: #111a2e; --white: #ffffff; --match-bg: #1e293b; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--dark-bg); color: var(--white); margin: 0; padding: 20px; overflow-x: auto; }
+        
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { color: var(--gold); }
+
+        /* Contenedor Grande */
+        .bracket-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            padding: 40px;
+            min-height: 500px;
+        }
+
+        .column { display: flex; flex-direction: column; justify-content: space-around; gap: 30px; }
+        
+        /* Cajas de Enfrentamientos */
+        .matchup {
+            display: flex;
+            flex-direction: column;
+            background: var(--match-bg);
+            border: 2px solid var(--gold);
+            width: 160px;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Slots de Equipos */
+        .team-slot {
+            padding: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+            color: var(--white);
+            cursor: pointer; /* Indica que se puede hacer click */
+            transition: background 0.2s;
+        }
+        .team-slot:last-child { border-bottom: none; }
+        .team-slot:hover { background: #334155; }
+        
+        /* Estilo para Ganador */
+        .team-slot.winner { background: #10b981; color: #111; }
+        
+        .connector-text { color: var(--gold); font-size: 10px; text-align: center; padding: 3px; font-weight: normal; }
+
+        .btn-panel { position: fixed; bottom: 20px; left: 20px; text-decoration: none; color: white; background: var(--match-bg); padding: 10px; border-radius: 5px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="btn-panel">⬅️ Volver al Registro</a>
+
+    <header>
+        <h1>⚔️ Mobile Legends Master Championship</h1>
+        <p>Haz clic en el ganador de cada cruce para que avance.</p>
+    </header>
+
+    <div id="bracket-view" class="bracket-container">
+        </div>
+
+    <script>
+        // Lógica de Brackets Dinámicos
+        let data = JSON.parse(localStorage.getItem('torneo_sorteo'));
+
+        // Cargar vista inicial
+        dibujarFases();
+
+        function dibujarFases() {
+            const cont = document.getElementById('bracket-view');
+            cont.innerHTML = "";
+            if(!data) { cont.innerHTML = "No se ha generado ningún sorteo aún."; return; }
+
+            const list = data.matches;
+
+            // FASE 1: Cuartos/Inicio (Inscritos)
+            const col1 = document.createElement('div'); col1.className = "column";
+            for(let i=0; i < list.length; i+=2) {
+                const eq1 = list[i].nombre;
+                const eq2 = list[i+1] ? list[i+1].nombre : "--- (BYE)";
+                col1.innerHTML += createMatchHtml(eq1, eq2, 'initial', i/2);
+            }
+
+            // FASE 2: Semifinal (Ganadores A/B)
+            const col2 = document.createElement('div'); col2.className = "column";
+            const semiA = data.results.semifinal[0] || "GANADOR A";
+            const semiB = data.results.semifinal[1] || "GANADOR B";
+            col2.innerHTML += createMatchHtml(semiA, semiB, 'semi', 0);
+
+            // FASE 3: Final
+            const col3 = document.createElement('div'); col3.className = "column";
+            const campeon = data.results.final || "CAMPEÓN";
+            col3.innerHTML += `
+                <div class="matchup" style="border-color: #3b82f6;">
+                    <div class="team-slot" style="color:#3b82f6;">🏆 GRAN FINAL</div>
+                    <div class="team-slot winner" style="background:#3b82f6;">${campeon}</div>
+                </div>`;
+
+            cont.appendChild(col1);
+            cont.appendChild(col2);
+            cont.appendChild(col3);
+        }
+
+        // Función para crear el HTML de cada caja y asignar IDs para clics
+        function createMatchHtml(team1, team2, fase, matchIdx) {
+            return `
+                <div class="matchup">
+                    <div class="team-slot" onclick="marcarGanador('${team1}', '${fase}', ${matchIdx})">${team1}</div>
+                    <div class="connector-text">VS</div>
+                    <div class="team-slot" onclick="marcarGanador('${team2}', '${fase}', ${matchIdx})">${team2}</div>
+                </div>
+            `;
+        }
+
+        // LÓGICA DE AVANCE AL HACER CLIC
+        function marcarGanador(nombre, fase, matchIdx) {
+            if(nombre === "GANADOR A" || nombre === "GANADOR B" || nombre === "--- (BYE)") return; // No clics en placeholders
+            
+            if(fase === 'initial') {
+                // El ganador de Cuartos pasa a la Semifinal correspondiente
+                data.results.semifinal[matchIdx] = nombre;
+            } else if (fase === 'semi') {
+                // El ganador de Semis pasa a la Final
+                data.results.final = nombre;
+            }
+
+            // GUARDAR EL AVANCE EN LOCALSTORAGE
+            localStorage.setItem('torneo_sorteo', JSON.stringify(data));
+            
+            // Redibujar la pantalla para ver los cambios
+            dibujarFases();
+        }
+    </script>
+</body>
+</html>
