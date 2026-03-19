@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo Pro - Inscripciones</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Registro de Torneo</h1>
+        
+        <div class="form-card">
+            <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo">
+            <input type="text" id="capitan" placeholder="Nombre del Capitán">
+            <button onclick="registrarEquipo()">Inscribir Equipo</button>
+        </div>
+
+        <div class="main-content">
+            <section>
+                <h2>Equipos Inscritos</h2>
+                <ul id="listaEquipos"></ul>
+                <button class="btn-secondary" onclick="limpiarTorneo()">Borrar Todo</button>
+            </section>
+
+            <section>
+                <h2>Sorteo de Brackets</h2>
+                <button class="btn-action" onclick="sortearTorneo()">¡Generar Enfrentamientos!</button>
+                <div id="brackets"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
