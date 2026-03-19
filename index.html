@@ -3,31 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torneo Pro - Inscripciones</title>
+    <title>Torneo MLBB - Registro y Brackets</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🏆 Registro de Torneo</h1>
-        
-        <div class="form-card">
-            <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo">
-            <input type="text" id="capitan" placeholder="Nombre del Capitán">
-            <button onclick="registrarEquipo()">Inscribir Equipo</button>
+        <header>
+            <h1>🏆 Mobile Legends: Torneo</h1>
+            <p>Inscribe a tu equipo y participa por la gloria</p>
+        </header>
+
+        <div class="card" id="registro-section">
+            <h2>📝 Registro de Equipo</h2>
+            <div class="input-group">
+                <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo">
+                <input type="text" id="capitan" placeholder="Nombre del Capitán">
+            </div>
+
+            <div class="jugador-form">
+                <h3>Añadir Integrantes</h3>
+                <div class="row">
+                    <input type="text" id="nombreJugador" placeholder="Nombre Jugador">
+                    <input type="text" id="idJugador" placeholder="ID del Juego">
+                    <button class="btn-add" onclick="agregarJugadorATabla()">+</button>
+                </div>
+                <table id="tablaTemporal">
+                    <thead>
+                        <tr>
+                            <th>Jugador</th>
+                            <th>ID</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTabla"></tbody>
+                </table>
+            </div>
+            <button class="btn-primary" onclick="confirmarRegistro()">Confirmar Registro Total</button>
         </div>
 
-        <div class="main-content">
-            <section>
-                <h2>Equipos Inscritos</h2>
-                <ul id="listaEquipos"></ul>
-                <button class="btn-secondary" onclick="limpiarTorneo()">Borrar Todo</button>
-            </section>
+        <hr>
 
-            <section>
-                <h2>Sorteo de Brackets</h2>
-                <button class="btn-action" onclick="sortearTorneo()">¡Generar Enfrentamientos!</button>
-                <div id="brackets"></div>
-            </section>
+        <div id="admin-area">
+            <div id="login-form">
+                <h3>🔐 Panel de Control (Admin)</h3>
+                <input type="password" id="adminPass" placeholder="Contraseña">
+                <button onclick="accederAdmin()">Entrar</button>
+            </div>
+
+            <div id="admin-panel" style="display:none;">
+                <h2>⚙️ Gestión del Torneo</h2>
+                <div class="admin-actions">
+                    <button class="btn-action" onclick="generarBracketVisual()">Generar Sorteo Visual</button>
+                    <button class="btn-danger" onclick="limpiarTodo()">Borrar Todo el Torneo</button>
+                </div>
+
+                <div class="bracket-wrapper">
+                    <h3>Esquema de Enfrentamientos</h3>
+                    <div id="bracket-container" class="bracket-container">
+                        </div>
+                </div>
+                
+                <h3>Equipos Inscritos</h3>
+                <div id="lista-confirmados" class="grid-equipos"></div>
+            </div>
         </div>
     </div>
 
