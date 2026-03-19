@@ -1,56 +1,115 @@
-:root {
-    --gold: #eab308;
-    --dark: #0f172a;
-    --card: #1e293b;
-    --text: #f8fafc;
+let equipos = JSON.parse(localStorage.getItem('torneo_db')) || [];
+let listaTempJugadores = [];
+
+// Actualizar vista inicial si hay datos
+actualizarListaInscritos();
+
+function agregarJugadorATabla() {
+    const nombre = document.getElementById('nombreJugador').value;
+    const idJ = document.getElementById('idJugador').value;
+
+    if(!nombre || !idJ) return alert("Escribe nombre e ID del jugador");
+
+    // VALIDACIÓN: ID ÚNICO
+    const existeEnGlobal = equipos.some(e => e.integrantes.some(j => j.idJ === idJ));
+    const existeEnTemp = listaTempJugadores.some(j => j.idJ === idJ);
+
+    if(existeEnGlobal || existeEnTemp) {
+        return alert("¡ERROR! Este ID ya está registrado en otro equipo.");
+    }
+
+    listaTempJugadores.push({ nombre, idJ });
+    document.getElementById('nombreJugador').value = "";
+    document.getElementById('idJugador').value = "";
+    renderTablaTemp();
 }
 
-body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: var(--text); margin: 0; padding: 20px; }
-.container { max-width: 1000px; margin: auto; }
-header { text-align: center; margin-bottom: 30px; }
-h1 { color: var(--gold); margin-bottom: 5px; }
-
-.card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); }
-.input-group, .row { display: flex; gap: 10px; margin-bottom: 15px; }
-input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
-
-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; }
-th, td { border: 1px solid #334155; padding: 10px; text-align: left; }
-th { background: #334155; }
-
-.btn-add { background: var(--gold); color: black; font-weight: bold; border: none; padding: 0 20px; cursor: pointer; border-radius: 6px; }
-.btn-primary { width: 100%; padding: 15px; background: #3b82f6; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; }
-.btn-danger { background: #ef4444; border: none; color: white; padding: 10px; cursor: pointer; border-radius: 6px; }
-.btn-action { background: #10b981; border: none; color: white; padding: 10px 20px; cursor: pointer; border-radius: 6px; font-weight: bold; }
-
-/* DISEÑO DEL BRACKET (ESTILO FOTO) */
-.bracket-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background: #e2e8f0; /* Fondo claro para resaltar */
-    color: #1e293b;
-    padding: 40px 10px;
-    border-radius: 8px;
-    min-height: 300px;
-    margin-top: 20px;
+function renderTablaTemp() {
+    const cuerpo = document.getElementById('cuerpoTabla');
+    cuerpo.innerHTML = "";
+    listaTempJugadores.forEach((j, i) => {
+        cuerpo.innerHTML += `<tr><td>${j.nombre}</td><td>${j.idJ}</td><td><button onclick="quitarTemp(${i})">X</button></td></tr>`;
+    });
 }
 
-.round { display: flex; flex-direction: column; justify-content: space-around; height: 100%; }
-.round-title { font-size: 10px; font-weight: bold; text-align: center; margin-bottom: 10px; color: #64748b; }
-
-.match-box {
-    background: white;
-    border: 2px solid var(--gold);
-    padding: 8px;
-    width: 140px;
-    text-align: center;
-    margin: 15px 0;
-    font-weight: bold;
-    font-size: 12px;
-    position: relative;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+function quitarTemp(i) {
+    listaTempJugadores.splice(i, 1);
+    renderTablaTemp();
 }
 
-.grid-equipos { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
-.equipo-card { background: var(--card); border-left: 4px solid var(--gold); padding: 10px; border-radius: 4px; }
+function confirmarRegistro() {
+    const nomEq = document.getElementById('nombreEquipo').value;
+    const cap = document.getElementById('capitan').value;
+
+    if(!nomEq || !cap || listaTempJugadores.length === 0) {
+        return alert("Faltan datos del equipo o integrantes");
+    }
+
+    equipos.push({ nombre: nomEq, capitan: cap, integrantes: [...listaTempJugadores] });
+    localStorage.setItem('torneo_db', JSON.stringify(equipos));
+
+    // Limpiar todo
+    listaTempJugadores = [];
+    document.getElementById('nombreEquipo').value = "";
+    document.getElementById('capitan').value = "";
+    renderTablaTemp();
+    actualizarListaInscritos();
+    alert("¡Equipo registrado con éxito!");
+}
+
+function accederAdmin() {
+    const p = document.getElementById('adminPass').value;
+    if(p === "1234") { // Tu contraseña
+        document.getElementById('login-form').style.display = "none";
+        document.getElementById('admin-panel').style.display = "block";
+    } else {
+        alert("Clave incorrecta");
+    }
+}
+
+function actualizarListaInscritos() {
+    const cont = document.getElementById('lista-confirmados');
+    if(!cont) return;
+    cont.innerHTML = "";
+    equipos.forEach(e => {
+        cont.innerHTML += `<div class="equipo-card"><strong>${e.nombre}</strong><br><small>Cap: ${e.capitan}</small></div>`;
+    });
+}
+
+function generarBracketVisual() {
+    if(equipos.length < 4) return alert("Se necesitan mínimo 4 equipos para el esquema visual.");
+    
+    let m = [...equipos].sort(() => Math.random() - 0.5);
+    const container = document.getElementById('bracket-container');
+    container.innerHTML = "";
+
+    // Columna Cuartos/Ronda 1
+    const col1 = document.createElement('div'); col1.className = "round";
+    col1.innerHTML = `<div class="round-title">CUARTOS DE FINAL</div>`;
+    for(let i=0; i<4; i++) {
+        const txt = m[i] ? m[i].nombre : "POR DEFINIR";
+        col1.innerHTML += `<div class="match-box">${txt}</div>`;
+    }
+
+    // Columna Semifinal
+    const col2 = document.createElement('div'); col2.className = "round";
+    col2.innerHTML = `<div class="round-title">SEMIFINAL</div>
+                      <div class="match-box">GANADOR A</div>
+                      <div class="match-box">GANADOR B</div>`;
+
+    // Columna Final
+    const col3 = document.createElement('div'); col3.className = "round";
+    col3.innerHTML = `<div class="round-title">FINAL</div>
+                      <div class="match-box" style="border-color: #3b82f6;">CAMPEÓN</div>`;
+
+    container.appendChild(col1);
+    container.appendChild(col2);
+    container.appendChild(col3);
+}
+
+function limpiarTodo() {
+    if(confirm("¿Seguro? Se borrarán todos los registros permanentemente.")) {
+        localStorage.removeItem('torneo_db');
+        location.reload();
+    }
+}
