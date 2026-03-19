@@ -3,120 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Torneo MLBB</title>
+    <title>Torneo Pro MLBB</title>
     <style>
-        :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; }
-        body { font-family: sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: auto; }
-        .admin-access { position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer; z-index: 100; background: var(--card); padding: 8px; border-radius: 50%; border: 1px solid var(--gold); }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: left; }
+        :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; --green: #10b981; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 800px; margin: auto; }
+        
+        /* Botón Llave Esquina */
+        .admin-btn { position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer; z-index: 100; background: var(--card); padding: 8px; border-radius: 50%; border: 1px solid var(--gold); }
+        
+        /* Tarjetas y Forms */
+        .card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: left; margin-top: 20px; }
         input { width: 92%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
         .btn-add { background: var(--blue); color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
-        .btn-primary { width: 100%; padding: 15px; background: #10b981; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 15px; }
+        .btn-main { width: 100%; padding: 15px; background: var(--green); border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 15px; }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
         th { color: var(--gold); border-bottom: 1px solid #334155; text-align: left; padding: 8px; }
         td { padding: 8px; border-bottom: 1px solid #1e293b; }
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; justify-content: center; align-items: center; }
-        .modal-content { background: #16213e; padding: 30px; border-radius: 15px; width: 85%; max-width: 400px; border: 1px solid var(--gold); }
+
+        /* Modal y Paneles */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; display: none; justify-content: center; align-items: center; }
+        .modal-content { background: #16213e; padding: 30px; border-radius: 15px; width: 90%; max-width: 800px; border: 1px solid var(--gold); max-height: 90vh; overflow-y: auto; }
+        
+        /* Brackets Visual */
+        .bracket-board { display: flex; justify-content: center; gap: 40px; margin-top: 30px; padding: 20px; }
+        .column { display: flex; flex-direction: column; gap: 30px; }
+        .match-card { background: var(--card); border: 2px solid var(--gold); width: 180px; border-radius: 8px; }
+        .team-box { padding: 12px; cursor: pointer; border-bottom: 1px solid #334155; font-weight: bold; font-size: 13px; }
+        .team-box:last-child { border-bottom: none; }
+        .win-style { background: var(--green) !important; color: black; }
     </style>
 </head>
 <body>
 
-    <div class="admin-access" onclick="document.getElementById('mAdmin').style.display='flex'">🔐</div>
+    <div class="admin-btn" onclick="abrirAdmin()">🔐</div>
 
-    <div class="container">
-        <h1>🏆 Mobile Legends: Registro</h1>
+    <div class="container" id="registro-page">
+        <h1>🏆 Mobile Legends: Inscripción</h1>
         <div class="card">
             <h3>Datos del Equipo</h3>
-            <input type="text" id="nEq" placeholder="Nombre del Equipo">
-            <input type="text" id="cap" placeholder="Nombre del Capitán">
+            <input type="text" id="nombreEquipo" placeholder="Nombre del Equipo">
+            <input type="text" id="capitan" placeholder="Nombre del Capitán">
             
             <hr style="border: 0.5px solid #334155; margin: 20px 0;">
-            <h3>Integrantes (5 Jugadores)</h3>
+            <h3>Añadir Jugadores (5 máx)</h3>
             <div style="display: flex; gap: 5px;">
-                <input type="text" id="nJug" placeholder="Nombre Jugador">
-                <input type="text" id="idJug" placeholder="ID Juego">
-                <button class="btn-add" onclick="addJ()">+</button>
+                <input type="text" id="nJugador" placeholder="Nombre Jugador">
+                <input type="text" id="idJugador" placeholder="ID Juego">
+                <button class="btn-add" onclick="agregarJugador()">+</button>
             </div>
 
             <table>
-                <thead><tr><th>Jugador</th><th>ID</th><th>Acción</th></tr></thead>
-                <tbody id="cBody"></tbody>
+                <thead><tr><th>Nombre</th><th>ID</th><th>Acción</th></tr></thead>
+                <tbody id="tablaJugadores"></tbody>
             </table>
 
-            <button class="btn-primary" onclick="finalizarRegistro()">CONFIRMAR EQUIPO COMPLETO</button>
+            <button class="btn-main" onclick="finalizarEquipo()">CONFIRMAR REGISTRO DE ESTE EQUIPO</button>
         </div>
-        <br>
-        <a href="brackets.html" id="linkB" style="display:none; color:cyan; font-weight:bold; text-decoration:none; border: 1px solid cyan; padding: 10px; border-radius: 8px;">🖥️ VER BRACKETS DEL TORNEO</a>
+        <p id="contador" style="color:var(--gold); font-weight:bold; margin-top:20px;"></p>
     </div>
 
-    <div id="mAdmin" class="modal">
+    <div id="modalAdmin" class="modal">
         <div class="modal-content">
-            <span onclick="document.getElementById('mAdmin').style.display='none'" style="float:right; cursor:pointer; font-size:24px;">&times;</span>
-            <div id="login">
-                <h3>Admin Login</h3>
-                <input type="password" id="pass" placeholder="Clave (1234)">
-                <button onclick="auth()" class="btn-primary">Entrar</button>
+            <span onclick="cerrarAdmin()" style="float:right; cursor:pointer; font-size:28px;">&times;</span>
+            
+            <div id="login-admin">
+                <h3>Acceso Administrador</h3>
+                <input type="password" id="passAdmin" placeholder="Contraseña (1234)">
+                <button class="btn-main" onclick="authAdmin()">Entrar al Panel</button>
             </div>
-            <div id="panel" style="display:none;">
-                <h3>⚙️ Panel Admin</h3>
-                <button onclick="sortear()" style="background:#8b5cf6; width:100%; padding:15px; border:none; color:white; font-weight:bold; border-radius:6px; cursor:pointer;">🔀 GENERAR SORTEO</button>
-                <button onclick="localStorage.clear(); location.reload();" style="background:red; border:none; color:white; padding:5px; margin-top:20px; cursor:pointer; font-size:10px;">BORRAR TODO</button>
+
+            <div id="panel-admin" style="display:none;">
+                <h2>⚙️ Gestión del Torneo</h2>
+                <button onclick="generarSorteo()" style="background:#8b5cf6; width:100%; padding:15px; border:none; color:white; font-weight:bold; border-radius:6px; cursor:pointer;">🔀 GENERAR SORTEO ALEATORIO</button>
+                
+                <div class="bracket-board" id="tablero-brackets"></div>
+
+                <hr style="margin:40px 0;">
+                <button onclick="borrarTodo()" style="background:red; border:none; color:white; padding:10px; cursor:pointer; font-size:12px; border-radius:5px;">⚠️ BORRAR TODA LA BASE DE DATOS</button>
             </div>
         </div>
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('torneo_data')) || [];
-        let tJug = [];
+        // VARIABLES GLOBALES (Se cargan del LocalStorage)
+        let baseEquipos = JSON.parse(localStorage.getItem('torneo_v4_equipos')) || [];
+        let sorteoActual = JSON.parse(localStorage.getItem('torneo_v4_sorteo')) || null;
+        let ganadoresFase2 = JSON.parse(localStorage.getItem('torneo_v4_fase2')) || ["GANADOR 1", "GANADOR 2"];
+        let campeon = localStorage.getItem('torneo_v4_campeon') || "🏆 CAMPEÓN";
+        let jugadoresTemporales = [];
 
-        // Mostrar botón si ya hay sorteo
-        if(localStorage.getItem('sorteo_actual')) document.getElementById('linkB').style.display = 'inline-block';
+        actualizarContador();
 
-        function addJ() {
-            const n = document.getElementById('nJug').value;
-            const i = document.getElementById('idJug').value;
-            if(!n || !i) return alert("Completa los datos del jugador");
-            tJug.push({n, i});
-            document.getElementById('nJug').value = "";
-            document.getElementById('idJug').value = "";
-            renderT();
+        // FUNCIONES DE REGISTRO
+        function agregarJugador() {
+            const n = document.getElementById('nJugador').value;
+            const i = document.getElementById('idJugador').value;
+            if(!n || !i) return alert("Faltan datos");
+            jugadoresTemporales.push({n, i});
+            document.getElementById('nJugador').value = "";
+            document.getElementById('idJugador').value = "";
+            renderTablaTemp();
         }
 
-        function renderT() {
-            const b = document.getElementById('cBody');
-            b.innerHTML = tJug.map((j, idx) => `<tr><td>${j.n}</td><td>${j.i}</td><td><button onclick="tJug.splice(${idx},1);renderT();">x</button></td></tr>`).join('');
+        function renderTablaTemp() {
+            const t = document.getElementById('tablaJugadores');
+            t.innerHTML = jugadoresTemporales.map((j, idx) => `<tr><td>${j.n}</td><td>${j.i}</td><td><button onclick="jugadoresTemporales.splice(${idx},1);renderTablaTemp();">x</button></td></tr>`).join('');
         }
 
-        function finalizarRegistro() {
-            const ne = document.getElementById('nEq').value;
-            const ca = document.getElementById('cap').value;
-            if(!ne || !ca || tJug.length === 0) return alert("Faltan datos");
-            db.push({nombre: ne, capitan: ca, integrantes: [...tJug]});
-            localStorage.setItem('torneo_data', JSON.stringify(db));
-            tJug = [];
-            document.getElementById('nEq').value = "";
-            document.getElementById('cap').value = "";
-            renderT();
-            alert("¡Equipo registrado!");
+        function finalizarEquipo() {
+            const ne = document.getElementById('nombreEquipo').value;
+            const ca = document.getElementById('capitan').value;
+            if(!ne || !ca || jugadoresTemporales.length === 0) return alert("Faltan datos o jugadores");
+
+            baseEquipos.push({nombre: ne, capitan: ca, integrantes: [...jugadoresTemporales]});
+            localStorage.setItem('torneo_v4_equipos', JSON.stringify(baseEquipos));
+            
+            jugadoresTemporales = [];
+            document.getElementById('nombreEquipo').value = "";
+            document.getElementById('capitan').value = "";
+            renderTablaTemp();
+            actualizarContador();
+            alert("¡Equipo guardado con éxito!");
         }
 
-        function auth() {
-            if(document.getElementById('pass').value === "1234") {
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('panel').style.display = 'block';
-            }
+        function actualizarContador() {
+            document.getElementById('contador').innerText = `Equipos inscritos: ${baseEquipos.length}`;
         }
 
-        function sortear() {
-            if(db.length < 2) return alert("Mínimo 2 equipos para sortear");
-            let mezclados = [...db].sort(() => Math.random() - 0.5);
-            localStorage.setItem('sorteo_actual', JSON.stringify(mezclados));
+        // FUNCIONES ADMIN
+        function abrirAdmin() { document.getElementById('modalAdmin').style.display = 'flex'; }
+        function cerrarAdmin() { document.getElementById('modalAdmin').style.display = 'none'; }
+
+        function authAdmin() {
+            if(document.getElementById('passAdmin').value === "1234") {
+                document.getElementById('login-admin').style.display = 'none';
+                document.getElementById('panel-admin').style.display = 'block';
+                dibujarBrackets();
+            } else { alert("Clave Incorrecta"); }
+        }
+
+        function generarSorteo() {
+            if(baseEquipos.length < 2) return alert("Mínimo 2 equipos");
+            sorteoActual = [...baseEquipos].sort(() => Math.random() - 0.5);
+            localStorage.setItem('torneo_v4_sorteo', JSON.stringify(sorteoActual));
+            
             // Resetear avances
-            localStorage.removeItem('ganadores_semi');
-            localStorage.removeItem('ganador_final');
-            alert("¡Sorteo generado con éxito!");
-            location.reload();
+            ganadoresFase2 = ["GANADOR 1", "GANADOR 2"];
+            campeon = "🏆 CAMPEÓN";
+            localStorage.removeItem('torneo_v4_fase2');
+            localStorage.removeItem('torneo_v4_campeon');
+            
+            dibujarBrackets();
+            alert("¡Sorteo Generado!");
+        }
+
+        function dibujarBrackets() {
+            const board = document.getElementById('tablero-brackets');
+            if(!sorteoActual) { board.innerHTML = "<p>Pendiente de generar sorteo...</p>"; return; }
+            board.innerHTML = "";
+
+            // COLUMNA 1
+            const col1 = document.createElement('div'); col1.className = "column";
+            for(let i=0; i < sorteoActual.length; i+=2) {
+                const e1 = sorteoActual[i].nombre;
+                const e2 = sorteoActual[i+1] ? sorteoActual[i+1].nombre : "BYE (Solo)";
+                col1.innerHTML += `
+                    <div class="match-card">
+                        <div class="team-box" onclick="avanzar(1, ${i/2}, '${e1}')">${e1}</div>
+                        <div class="team-box" onclick="avanzar(1, ${i/2}, '${e2}')">${e2}</div>
+                    </div>`;
+            }
+
+            // COLUMNA 2 (FINAL)
+            const col2 = document.createElement('div'); col2.className = "column";
+            col2.innerHTML += `
+                <div class="match-card">
+                    <div class="team-box" onclick="avanzar(2, 0, '${ganadoresFase2[0]}')">${ganadoresFase2[0]}</div>
+                    <div class="team-box" onclick="avanzar(2, 0, '${ganadoresFase2[1]}')">${ganadoresFase2[1]}</div>
+                </div>`;
+
+            // COLUMNA 3 (GANADOR)
+            const col3 = document.createElement('div'); col3.className = "column";
+            col3.innerHTML += `<div class="match-card" style="border-color:cyan"><div class="team-box win-style">${campeon}</div></div>`;
+
+            board.appendChild(col1);
+            board.appendChild(col2);
+            board.appendChild(col3);
+        }
+
+        function avanzar(fase, idx, nombre) {
+            if(nombre.includes("GANADOR") || nombre.includes("BYE")) return;
+            if(fase === 1) {
+                ganadoresFase2[idx] = nombre;
+                localStorage.setItem('torneo_v4_fase2', JSON.stringify(ganadoresFase2));
+            } else if(fase === 2) {
+                campeon = nombre;
+                localStorage.setItem('torneo_v4_campeon', campeon);
+            }
+            dibujarBrackets();
+        }
+
+        function borrarTodo() {
+            if(confirm("¿Seguro? Se borrará todo para siempre.")) {
+                localStorage.clear();
+                location.reload();
+            }
         }
     </script>
 </body>
