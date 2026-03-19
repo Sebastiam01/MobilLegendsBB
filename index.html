@@ -3,32 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Torneo Mobile Legends</title>
+    <title>Torneo Pro - Guardado Permanente</title>
     <style>
-        /* CSS INTEGRADO */
         :root { --gold: #eab308; --blue: #3b82f6; --dark: #0f172a; --card: #1e293b; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; margin: 0; padding: 20px; }
         .container { max-width: 600px; margin: auto; }
-        
         .admin-access { position: fixed; top: 15px; right: 15px; font-size: 24px; cursor: pointer; z-index: 100; background: var(--card); padding: 8px; border-radius: 50%; border: 1px solid var(--gold); }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        
+        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; }
         .input-group, .row { display: flex; gap: 8px; margin-bottom: 15px; }
-        input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 14px; }
-        
-        .table-container { margin: 15px 0; background: #0f172a; border-radius: 6px; border: 1px solid #334155; }
+        input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; }
+        .table-container { margin: 15px 0; background: #0f172a; border-radius: 6px; border: 1px solid #334155; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid #334155; font-size: 13px; }
-        th { color: var(--gold); }
-
+        th { color: var(--gold); background: #1e293b; }
         .btn-add { background: var(--blue); color: white; border: none; padding: 0 20px; cursor: pointer; border-radius: 6px; font-size: 20px; }
         .btn-primary { width: 100%; padding: 15px; background: #10b981; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; }
-
-        /* MODAL */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; display: none; justify-content: center; align-items: center; }
         .modal-content { background: var(--card); padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; border: 1px solid var(--gold); }
-        
-        .bracket-view { background: #f3f4f6; color: #111; padding: 15px; margin-top: 15px; border-radius: 8px; font-size: 14px; line-height: 1.6; }
+        .bracket-view { background: white; color: #111; padding: 20px; margin-top: 15px; border-radius: 8px; font-weight: bold; border-left: 5px solid var(--gold); }
     </style>
 </head>
 <body>
@@ -37,65 +29,74 @@
 
     <div class="container">
         <header style="text-align: center;">
-            <h1>🏆 Mobile Legends: Torneo</h1>
-            <p>Inscribe a tu equipo</p>
+            <h1>🏆 MLBB: Torneo Master</h1>
+            <p>Los datos se guardan automáticamente</p>
         </header>
 
         <div class="card">
-            <h2>📝 Registro</h2>
+            <h2>📝 Registro de Equipo</h2>
             <div class="input-group">
                 <input type="text" id="nombreEquipo" placeholder="Nombre Equipo">
                 <input type="text" id="capitan" placeholder="Capitán">
             </div>
 
-            <h3>Integrantes</h3>
+            <h3>Integrantes del Equipo</h3>
             <div class="row">
-                <input type="text" id="nombreJugador" placeholder="Jugador">
-                <input type="text" id="idJugador" placeholder="ID Juego">
+                <input type="text" id="nombreJugador" placeholder="Nombre Jugador">
+                <input type="text" id="idJugador" placeholder="ID (Ej: 12345)">
                 <button class="btn-add" onclick="agregarJugador()">+</button>
             </div>
             
             <div class="table-container">
                 <table>
-                    <thead><tr><th>Jugador</th><th>ID</th><th>X</th></tr></thead>
+                    <thead><tr><th>Jugador</th><th>ID Juego</th><th>Borrar</th></tr></thead>
                     <tbody id="cuerpoTabla"></tbody>
                 </table>
             </div>
-            <button class="btn-primary" onclick="guardarEquipo()">Confirmar Registro Total</button>
+            <button class="btn-primary" onclick="guardarEquipo()">FINALIZAR REGISTRO DE EQUIPO</button>
         </div>
     </div>
 
     <div id="modalAdmin" class="modal-overlay">
         <div class="modal-content">
-            <button onclick="cerrarModal()" style="float:right; background:none; color:white; border:none; font-size:20px; cursor:pointer;">&times;</button>
+            <button onclick="cerrarModal()" style="float:right; background:none; color:white; border:none; font-size:25px; cursor:pointer;">&times;</button>
             <div id="login-admin">
                 <h3>Admin Login</h3>
-                <input type="password" id="pass" placeholder="Clave (1234)" style="width: 80%;">
-                <button onclick="login()" style="padding: 10px; background: var(--blue); color:white; border:none; border-radius:5px; cursor:pointer;">Entrar</button>
+                <input type="password" id="pass" placeholder="Contraseña (1234)" style="width: 85%;">
+                <button onclick="login()" style="margin-top:10px; padding:10px; width:92%; background: var(--blue); color:white; border:none; border-radius:5px; cursor:pointer;">Entrar</button>
             </div>
             <div id="panel-cont" style="display:none;">
-                <h3>⚙️ Gestión</h3>
-                <button onclick="generarSorteo()" style="background:#8b5cf6; color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">Generar Sorteo</button>
-                <button onclick="borrarTodo()" style="background:red; color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">Borrar Todo</button>
-                <div id="bracket-res" class="bracket-view"></div>
+                <h3>⚙️ Panel de Sorteo</h3>
+                <p id="contadorEquipos"></p>
+                <button onclick="generarSorteo()" style="background:#8b5cf6; color:white; padding:12px; border:none; border-radius:5px; cursor:pointer; width:100%;">🔀 GENERAR CRUCES ALEATORIOS</button>
+                <div id="bracket-res" class="bracket-view">Aún no hay sorteo...</div>
+                <hr>
+                <button onclick="borrarTodo()" style="background:red; color:white; padding:8px; border:none; border-radius:5px; cursor:pointer; width:100%; font-size:12px;">⚠️ BORRAR TODA LA BASE DE DATOS</button>
             </div>
         </div>
     </div>
 
     <script>
-        // LÓGICA INTEGRADA
-        let db = JSON.parse(localStorage.getItem('torneo_mlbb')) || [];
-        let temp = [];
+        // Cargar base de datos al iniciar
+        let db = JSON.parse(localStorage.getItem('torneo_mlbb_v2')) || [];
+        let tempJugadores = [];
 
-        function abrirModal() { document.getElementById('modalAdmin').style.display = 'flex'; }
+        function abrirModal() { 
+            document.getElementById('modalAdmin').style.display = 'flex'; 
+            document.getElementById('contadorEquipos').innerText = `Equipos registrados: ${db.length}`;
+        }
         function cerrarModal() { document.getElementById('modalAdmin').style.display = 'none'; }
 
         function agregarJugador() {
-            const n = document.getElementById('nombreJugador').value;
-            const i = document.getElementById('idJugador').value;
-            if(!n || !i) return alert("Faltan datos");
+            const n = document.getElementById('nombreJugador').value.trim();
+            const i = document.getElementById('idJugador').value.trim();
+            if(!n || !i) return alert("Escribe nombre e ID");
 
-            temp.push({n, i});
+            // Evitar IDs duplicados
+            const existe = db.some(eq => eq.jugadores.some(j => j.i === i)) || tempJugadores.some(j => j.i === i);
+            if(existe) return alert("¡Este ID ya está en uso!");
+
+            tempJugadores.push({n, i});
             document.getElementById('nombreJugador').value = "";
             document.getElementById('idJugador').value = "";
             dibujarTabla();
@@ -103,50 +104,58 @@
 
         function dibujarTabla() {
             const c = document.getElementById('cuerpoTabla');
-            c.innerHTML = temp.map((j, idx) => `
-                <tr>
-                    <td>${j.n}</td>
-                    <td>${j.i}</td>
-                    <td><button onclick="eliminar(${idx})" style="background:red; color:white; border:none; cursor:pointer;">X</button></td>
-                </tr>`).join('');
+            c.innerHTML = tempJugadores.map((j, idx) => `
+                <tr><td>${j.n}</td><td>${j.i}</td>
+                <td><button onclick="eliminarJugador(${idx})" style="background:red; color:white; border:none; cursor:pointer; border-radius:3px;">X</button></td></tr>`).join('');
         }
 
-        function eliminar(idx) { temp.splice(idx, 1); dibujarTabla(); }
+        function eliminarJugador(idx) { tempJugadores.splice(idx, 1); dibujarTabla(); }
 
         function guardarEquipo() {
-            const ne = document.getElementById('nombreEquipo').value;
-            const cap = document.getElementById('capitan').value;
-            if(!ne || !cap || temp.length === 0) return alert("Completa el registro");
+            const ne = document.getElementById('nombreEquipo').value.trim();
+            const cap = document.getElementById('capitan').value.trim();
+            if(!ne || !cap || tempJugadores.length === 0) return alert("Faltan datos o jugadores");
 
-            db.push({nombre: ne, capitan: cap, jugadores: [...temp]});
-            localStorage.setItem('torneo_mlbb', JSON.stringify(db));
+            // Guardar en el array y sincronizar con localStorage
+            db.push({nombre: ne, capitan: cap, jugadores: [...tempJugadores]});
+            localStorage.setItem('torneo_mlbb_v2', JSON.stringify(db));
             
-            temp = [];
+            // Limpiar interfaz
+            tempJugadores = [];
             document.getElementById('nombreEquipo').value = "";
             document.getElementById('capitan').value = "";
             dibujarTabla();
-            alert("¡Equipo registrado!");
+            alert(`✅ Equipo "${ne}" guardado permanentemente.`);
         }
 
         function login() {
             if(document.getElementById('pass').value === "1234") {
                 document.getElementById('login-admin').style.display = 'none';
                 document.getElementById('panel-cont').style.display = 'block';
-            } else { alert("Incorrecto"); }
+            } else { alert("Clave incorrecta"); }
         }
 
         function generarSorteo() {
-            if(db.length < 2) return alert("Mínimo 2 equipos");
-            let m = [...db].sort(() => Math.random() - 0.5);
-            let res = "<strong>Cruces:</strong><br>";
-            for(let i=0; i<m.length; i+=2) {
-                res += `🛡️ ${m[i].nombre} vs 🛡️ ${m[i+1] ? m[i+1].nombre : 'PASA DIRECTO'}<br>`;
+            if(db.length < 2) return alert("Necesitas al menos 2 equipos registrados.");
+            
+            // Mezclar equipos
+            let mezclados = [...db].sort(() => Math.random() - 0.5);
+            let html = "<strong>--- ENFRENTAMIENTOS ---</strong><br><br>";
+            
+            for(let i=0; i<mezclados.length; i+=2) {
+                const eq1 = mezclados[i].nombre;
+                const eq2 = mezclados[i+1] ? mezclados[i+1].nombre : "PASA DIRECTO (Bye)";
+                html += `🎮 ${eq1} <span style="color:var(--blue)">VS</span> ${eq2}<br><hr style="border:0.5px solid #ddd">`;
             }
-            document.getElementById('bracket-res').innerHTML = res;
+            document.getElementById('bracket-res').innerHTML = html;
         }
 
         function borrarTodo() {
-            if(confirm("¿Borrar?")) { localStorage.clear(); location.reload(); }
+            if(confirm("¿Estás 100% seguro? Se borrarán todos los equipos para siempre.")) {
+                localStorage.removeItem('torneo_mlbb_v2');
+                db = [];
+                location.reload();
+            }
         }
     </script>
 </body>
