@@ -29,36 +29,44 @@
                     <input type="text" id="idJugador" placeholder="ID del Juego">
                     <button class="btn-add" onclick="agregarJugadorATabla()">+</button>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Jugador</th>
-                            <th>ID</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cuerpoTabla"></tbody>
-                </table>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Jugador</th>
+                                <th>ID</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTabla">
+                            </tbody>
+                    </table>
+                </div>
             </div>
             <button class="btn-primary" onclick="confirmarRegistro()">Confirmar Registro Total</button>
         </div>
     </div>
 
-    <div id="modalAdmin" class="modal">
+    <div id="modalAdmin" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <span class="close" onclick="cerrarModal()">&times;</span>
+            <span class="close-btn" onclick="cerrarModal()">&times;</span>
+            
             <div id="login-form">
                 <h3>Acceso Administrador</h3>
                 <input type="password" id="adminPass" placeholder="Contraseña">
                 <button onclick="accederAdmin()">Entrar</button>
             </div>
+
             <div id="admin-panel" style="display:none;">
                 <h2>⚙️ Gestión del Torneo</h2>
                 <button class="btn-action" onclick="generarBracketVisual()">Generar Sorteo</button>
-                <button class="btn-danger" onclick="limpiarTodo()">Borrar Torneo</button>
-                <div id="bracket-container" class="bracket-container"></div>
+                <button class="btn-danger" onclick="limpiarTodo()">Borrar Todo</button>
+                
+                <div id="bracket-container" class="bracket-view"></div>
+                
                 <h3>Equipos Inscritos</h3>
-                <div id="lista-confirmados" class="grid-equipos"></div>
+                <div id="lista-confirmados"></div>
             </div>
         </div>
     </div>
